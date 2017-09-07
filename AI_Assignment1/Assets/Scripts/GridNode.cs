@@ -11,6 +11,9 @@ namespace AI_Assignments.Pathfinding
     public class GridNode : MonoBehaviour
     {
         [SerializeField]
+        IntPair m_Coordinate;
+
+        [SerializeField]
         int m_ID = 0;
 
         [SerializeField]
@@ -20,6 +23,11 @@ namespace AI_Assignments.Pathfinding
         {
             get { return m_ID; }
             set { m_ID = value; }
+        }
+
+        public void SetCoordinate(int x, int y)
+        {
+            m_Coordinate = new IntPair (x, y);
         }
 
         /// <summary>
@@ -60,6 +68,31 @@ namespace AI_Assignments.Pathfinding
         public List<GridNode> GetAdjacentNodes()
         {
             return m_AdjacentNodes;
+        }
+    }
+
+    [System.Serializable]
+    class IntPair
+    {
+        [SerializeField]
+        int m_X = 0;
+        [SerializeField]
+        int m_Y = 0;
+
+        public IntPair(int x, int y)
+        {
+            m_X = x;
+            m_Y = y;
+        }
+
+        public int X
+        {
+            get { return m_X; }
+        }
+
+        public int Y
+        {
+            get { return m_Y; }
         }
     }
 }

@@ -70,6 +70,8 @@ namespace AI_Assignments.Editor
 
                 m_Nodes = new List<GridNode> ();
                 grid = new GameObject (m_GridParentName);
+                GridController controller = grid.AddComponent<GridController> ();
+                controller.Setup ();
                 grid.transform.position = Vector3.zero;
                 m_CurrentY = 0;
                 m_CurrentX = 0;
@@ -87,6 +89,7 @@ namespace AI_Assignments.Editor
                         m_Nodes.Add (node);
 
                         node.ID = i;
+                        node.SetCoordinate (m_CurrentX, m_CurrentY);
                         List<GridNode> adjacent = new List<GridNode> ();
 
                         int previousX = i - 1;
@@ -112,7 +115,9 @@ namespace AI_Assignments.Editor
                     {
                         ++m_CurrentY;
                         m_CurrentX = 0;
+                        controller.AddNode (m_CurrentY, node, true);
                     }
+                    else controller.AddNode (m_CurrentY, node, false);
                 }
 
                 m_WillGenerate = false;
