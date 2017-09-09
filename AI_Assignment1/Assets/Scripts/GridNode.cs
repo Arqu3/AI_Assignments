@@ -10,19 +10,48 @@ namespace AI_Assignments.Pathfinding
     [ExecuteInEditMode]
     public class GridNode : MonoBehaviour
     {
+        #region Exposed fields
+
+        [Header("Is this node the start or end node?")]
+        [SerializeField]
+        bool m_IsStart = false;
+        [SerializeField]
+        bool m_IsEnd = false;
+
+        [Header("Exposed fields that are stored from editor to play-mode")]
         [SerializeField]
         IntPair m_Coordinate;
-
         [SerializeField]
         int m_ID = 0;
-
         [SerializeField]
-        List<GridNode> m_AdjacentNodes = new List<GridNode> ();
+        List<GridNode> m_AdjacentNodes = new List<GridNode>();
+
+        #endregion
 
         public int ID
         {
             get { return m_ID; }
             set { m_ID = value; }
+        }
+
+        public int X
+        {
+            get { return m_Coordinate.X; }
+        }
+
+        public int Y
+        {
+            get { return m_Coordinate.Y; }
+        }
+
+        public bool IsStart
+        {
+            get { return m_IsStart; }
+        }
+
+        public bool IsEnd
+        {
+            get { return m_IsEnd; }
         }
 
         public void SetCoordinate(int x, int y)
@@ -47,7 +76,10 @@ namespace AI_Assignments.Pathfinding
         /// <param name="nodeToAdd"></param>
         public void AddToAdjacentNodes(GridNode nodeToAdd)
         {
-            if ( !m_AdjacentNodes.Contains (nodeToAdd) ) m_AdjacentNodes.Add (nodeToAdd);
+            if (nodeToAdd)
+            {
+                if (!m_AdjacentNodes.Contains(nodeToAdd)) m_AdjacentNodes.Add(nodeToAdd);
+            }
         }
 
         void OnDrawGizmosSelected()
@@ -65,9 +97,9 @@ namespace AI_Assignments.Pathfinding
             }
         }
 
-        public List<GridNode> GetAdjacentNodes()
+        public List<GridNode> AdjacentNodes
         {
-            return m_AdjacentNodes;
+            get { return m_AdjacentNodes; }
         }
     }
 

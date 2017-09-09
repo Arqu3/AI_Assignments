@@ -68,6 +68,7 @@ namespace AI_Assignments.Editor
                     DestroyImmediate (grid);
                 }
 
+                //Setup grid parent object and other local variables
                 m_Nodes = new List<GridNode> ();
                 grid = new GameObject (m_GridParentName);
                 GridController controller = grid.AddComponent<GridController> ();
@@ -76,13 +77,15 @@ namespace AI_Assignments.Editor
                 m_CurrentY = 0;
                 m_CurrentX = 0;
                 int total = m_XAmount * m_YAMount;
+                float offset = 1.1f;
 
                 for (int i = 0 ; i < total ; ++i )
                 {
-                    float offset = 1.1f;
+                    //Create node gameobject
                     GameObject go = Instantiate (m_GridPrefab, new Vector3 (offset * m_CurrentX, 0.0f, offset * m_CurrentY), Quaternion.identity);
                     go.transform.SetParent (grid.transform, true);
 
+                    //Get gridnode script and setup node properties if != null
                     GridNode node = go.GetComponent<GridNode> ();
                     if ( node )
                     {
@@ -90,34 +93,34 @@ namespace AI_Assignments.Editor
 
                         node.ID = i;
                         node.SetCoordinate (m_CurrentX, m_CurrentY);
-                        List<GridNode> adjacent = new List<GridNode> ();
-
-                        int previousX = i - 1;
-                        //TODO - fix Y amount greater than X amount
-                        int previousY = i - m_YAMount;
-
-                        if ( previousY >= 0 )
-                        {
-                            adjacent.Add (m_Nodes[previousY]);
-                            m_Nodes[previousY].AddToAdjacentNodes (node);
-                        }
-                        if ( previousX >= 0 && m_CurrentX > 0 )
-                        {
-                            adjacent.Add (m_Nodes[previousX]);
-                            m_Nodes[previousX].AddToAdjacentNodes (node);
-                        }
-
-                        node.SetAdjacentNodes (adjacent);
                     }
 
+                    //Add node to the current row in the gridcontroller
+                    if (m_CurrentX < m_XAmount) controller.AddNode(m_CurrentY, node);
+
+                    //Increment row position, add new row if it has reached the end
                     ++m_CurrentX;
                     if ( m_CurrentX >= m_XAmount )
                     {
                         ++m_CurrentY;
-                        m_CurrentX = 0;
-                        controller.AddNode (m_CurrentY, node, true);
+                        if (m_CurrentY < m_YAMount)
+                        {
+                            m_CurrentX = 0;
+                            controller.AddRow();
+                        }
                     }
-                    else controller.AddNode (m_CurrentY, node, false);
+                }
+
+                //Setup each node's adjacent nodes in the grid
+                for (int i = 0; i < m_Nodes.Count; ++i)
+                {
+                    int x = m_Nodes[i].X;
+                    int y = m_Nodes[i].Y;
+
+                    m_Nodes[i].AddToAdjacentNodes(controller.GetNode(y - 1, x));
+                    m_Nodes[i].AddToAdjacentNodes(controller.GetNode(y + 1, x));
+                    m_Nodes[i].AddToAdjacentNodes(controller.GetNode(y, x - 1));
+                    m_Nodes[i].AddToAdjacentNodes(controller.GetNode(y, x + 1));
                 }
 
                 m_WillGenerate = false;
