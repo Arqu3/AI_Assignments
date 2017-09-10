@@ -19,6 +19,7 @@ namespace AI_Assignments.Editor
         int m_YAMount = 10;
         int m_CurrentY = 0;
         int m_CurrentX = 0;
+        bool m_RandomCost = false;
         List<GridNode> m_Nodes = new List<GridNode> ();
 
         #endregion
@@ -47,6 +48,7 @@ namespace AI_Assignments.Editor
             EditorGUILayout.LabelField ("Grid size options", EditorStyles.boldLabel);
             m_XAmount = Mathf.Clamp (EditorGUILayout.IntField ("Number of X nodes", m_XAmount), 1, 100);
             m_YAMount = Mathf.Clamp (EditorGUILayout.IntField ("Number of Y nodes", m_YAMount), 1, 100);
+            m_RandomCost = EditorGUILayout.Toggle("Randomize cost", m_RandomCost);
 
             EditorGUILayout.Space ();
 
@@ -93,6 +95,10 @@ namespace AI_Assignments.Editor
 
                         node.ID = i;
                         node.SetCoordinate (m_CurrentX, m_CurrentY);
+
+                        if (m_RandomCost) node.Cost = Random.Range(1f, 3.0f);
+                        if (i == 0) node.IsStart = true;
+                        else if (i == total - 1) node.IsEnd = true;
                     }
 
                     //Add node to the current row in the gridcontroller
@@ -122,6 +128,8 @@ namespace AI_Assignments.Editor
                     m_Nodes[i].AddToAdjacentNodes(controller.GetNode(y, x - 1));
                     m_Nodes[i].AddToAdjacentNodes(controller.GetNode(y, x + 1));
                 }
+
+                controller.Nodes = m_Nodes;
 
                 m_WillGenerate = false;
             }

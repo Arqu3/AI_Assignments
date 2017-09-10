@@ -12,6 +12,11 @@ namespace AI_Assignments.Pathfinding
     {
         #region Exposed fields
 
+        [Header("Node properties")]
+        [SerializeField]
+        [Range(0.0f, 500.0f)]
+        float m_Weight = 1.0f;
+
         [Header("Is this node the start or end node?")]
         [SerializeField]
         bool m_IsStart = false;
@@ -27,6 +32,9 @@ namespace AI_Assignments.Pathfinding
         List<GridNode> m_AdjacentNodes = new List<GridNode>();
 
         #endregion
+
+        bool m_Searched = false;
+        bool m_Taken = false;
 
         public int ID
         {
@@ -47,11 +55,31 @@ namespace AI_Assignments.Pathfinding
         public bool IsStart
         {
             get { return m_IsStart; }
+            set { m_IsStart = value; }
         }
 
         public bool IsEnd
         {
             get { return m_IsEnd; }
+            set { m_IsEnd = value; }
+        }
+
+        public bool Searched
+        {
+            get { return m_Searched; }
+            set { m_Searched = value; }
+        }
+
+        public bool Taken
+        {
+            get { return m_Taken; }
+            set { m_Taken = value; }
+        }
+
+        public float Cost
+        {
+            get { return m_Weight; }
+            set { m_Weight = value; }
         }
 
         public void SetCoordinate(int x, int y)
@@ -79,6 +107,32 @@ namespace AI_Assignments.Pathfinding
             if (nodeToAdd)
             {
                 if (!m_AdjacentNodes.Contains(nodeToAdd)) m_AdjacentNodes.Add(nodeToAdd);
+            }
+        }
+
+        void OnDrawGizmos()
+        {
+            if (m_IsStart)
+            {
+                Gizmos.color = Color.cyan;
+                Gizmos.DrawSphere(transform.position + Vector3.up, 0.3f);
+            }
+            else if (m_IsEnd)
+            {
+                Gizmos.color = Color.white;
+                Gizmos.DrawSphere(transform.position + Vector3.up, 0.3f);
+            }
+
+            if (m_Taken)
+            {
+                Gizmos.color = Color.yellow;
+                Gizmos.DrawCube(transform.position, Vector3.one * 1.05f);
+                return;
+            }
+            else if (m_Searched)
+            {
+                Gizmos.color = Color.blue;
+                Gizmos.DrawCube(transform.position, Vector3.one * 1.05f);
             }
         }
 

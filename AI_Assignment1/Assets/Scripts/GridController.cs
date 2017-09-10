@@ -10,6 +10,8 @@ namespace AI_Assignments.Pathfinding
 
         [SerializeField]
         List<GridList> m_Nodes = new List<GridList>();
+        [SerializeField]
+        List<GridNode> m_CompleteNodesList = new List<GridNode>();
 
         [SerializeField]
         GridNode m_StartNode = null;
@@ -30,7 +32,7 @@ namespace AI_Assignments.Pathfinding
         {
             for (int i = 0; i < m_Nodes.Count; ++i)
             {
-                if (m_StartNode != null && m_EndNode) break;
+                if (m_StartNode && m_EndNode) break;
 
                 for (int j = 0; j < m_Nodes[i].Count; ++j)
                 {
@@ -98,6 +100,12 @@ namespace AI_Assignments.Pathfinding
         public GridNode EndNode
         {
             get { return m_EndNode; }
+        }
+
+        public List<GridNode> Nodes
+        {
+            get { return m_CompleteNodesList; }
+            set { m_CompleteNodesList = value; }
         }
     }
 
