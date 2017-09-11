@@ -60,6 +60,8 @@ namespace AI_Assignments.Pathfinding
 
                     //Go through the current open list and chose the move valuable node to go to
                     float gg = g;
+                    f = g + m_OpenList[0].Cost + ManhattanDistance(m_OpenList[0], endnode);
+                    bool chosen = false;
                     for (int j = 0; j < m_OpenList.Count; ++j)
                     {
                         if (m_OpenList[j].IsEnd)
@@ -72,10 +74,11 @@ namespace AI_Assignments.Pathfinding
                         float localh = ManhattanDistance(m_OpenList[j], endnode);
                         float localf = localg + localh;
 
-                        if (localf <= f || m_OpenList.Count == 1)
+                        if (localf <= f || m_OpenList.Count == 1 || (!chosen && j == m_OpenList.Count - 1))
                         {
                             gg = localg;
                             currentNode = m_OpenList[j];
+                            chosen = true;
                         }
 
                         f = localf;
@@ -89,20 +92,6 @@ namespace AI_Assignments.Pathfinding
                     if (currentNode.IsEnd) break;
                 }
             }
-        }
-
-        GridNode GetLeastCostlyNode(List<GridNode> list)
-        {
-            GridNode node = list[0];
-
-
-
-            for (int i = 0; i < list.Count; ++i)
-            {
-
-            }
-
-            return null;
         }
 
         /// <summary>
