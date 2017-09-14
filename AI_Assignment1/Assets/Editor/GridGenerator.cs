@@ -133,6 +133,27 @@ namespace AI_Assignments.Editor
 
                 m_WillGenerate = false;
             }
+            else if (grid)
+            {
+                GridController controller = grid.GetComponent<GridController> ();
+                if (controller)
+                {
+                    if ( GUILayout.Button ("Re-assign adjacent nodes") )
+                    {
+                        for ( int i = 0 ; i < m_Nodes.Count ; ++i )
+                        {
+                            m_Nodes[i].ClearAdjacentList ();
+                            int x = m_Nodes[i].X;
+                            int y = m_Nodes[i].Y;
+
+                            m_Nodes[i].AddToAdjacentNodes (controller.GetNode (y - 1, x));
+                            m_Nodes[i].AddToAdjacentNodes (controller.GetNode (y + 1, x));
+                            m_Nodes[i].AddToAdjacentNodes (controller.GetNode (y, x - 1));
+                            m_Nodes[i].AddToAdjacentNodes (controller.GetNode (y, x + 1));
+                        }
+                    }
+                }
+            }
         }
 
         void GenerateGrid()

@@ -82,7 +82,6 @@ namespace AI_Assignments.Pathfinding
                         }
 
                         f = localf;
-                        if (!m_ClosedList.Contains(m_OpenList[j])) m_ClosedList.Add(m_OpenList[j]);
                     }
 
                     g = gg;

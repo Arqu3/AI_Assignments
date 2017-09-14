@@ -81,7 +81,11 @@ namespace AI_Assignments.Pathfinding
         {
             if (y >= 0 && y < m_Nodes.Count)
             {
-                if (x >= 0 && x < m_Nodes[y].Count) return m_Nodes[y].GetNode(x);
+                if ( x >= 0 && x < m_Nodes[y].Count )
+                {
+                    GridNode node = m_Nodes[y].GetNode (x);
+                    if (node.Walkable) return m_Nodes[y].GetNode (x);
+                }
             }
             return null;
         }

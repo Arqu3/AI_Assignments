@@ -16,8 +16,10 @@ namespace AI_Assignments.Pathfinding
         [SerializeField]
         [Range(0.0f, 500.0f)]
         float m_Weight = 1.0f;
+        [SerializeField]
+        bool m_Walkable = true;
 
-        [Header("Is this node the start or end node?")]
+        [Header ("Is this node the start or end node?")]
         [SerializeField]
         bool m_IsStart = false;
         [SerializeField]
@@ -80,6 +82,12 @@ namespace AI_Assignments.Pathfinding
         {
             get { return m_Weight; }
             set { m_Weight = value; }
+        }
+
+        public bool Walkable
+        {
+            get { return m_Walkable; }
+            set { m_Walkable = value; }
         }
 
         public void SetCoordinate(int x, int y)
@@ -154,6 +162,11 @@ namespace AI_Assignments.Pathfinding
         public List<GridNode> AdjacentNodes
         {
             get { return m_AdjacentNodes; }
+        }
+
+        public void ClearAdjacentList()
+        {
+            m_AdjacentNodes.Clear ();
         }
     }
 
