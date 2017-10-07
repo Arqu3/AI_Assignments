@@ -140,9 +140,17 @@ namespace AI_Assignments.Editor
                 {
                     if ( GUILayout.Button ("Re-assign adjacent nodes") )
                     {
+                        m_Nodes = new List<GridNode> ();
+                        var nodes = FindObjectsOfType<GridNode> ();
+                        foreach(GridNode node in nodes)
+                        {
+                            m_Nodes.Add (node);
+                        }
+
                         for ( int i = 0 ; i < m_Nodes.Count ; ++i )
                         {
                             m_Nodes[i].ClearAdjacentList ();
+                            if ( !m_Nodes[i].Walkable ) continue;
                             int x = m_Nodes[i].X;
                             int y = m_Nodes[i].Y;
 

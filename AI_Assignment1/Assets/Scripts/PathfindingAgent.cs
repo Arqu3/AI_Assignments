@@ -12,6 +12,9 @@ namespace AI_Assignments.Pathfinding
         GridController m_Controller;
         bool m_FoundTarget = false;
 
+        List<GridNode> m_SearchedList = new List<GridNode> ();
+        List<GridNode> m_FinalPath = new List<GridNode> ();
+
         void Awake()
         {
             m_Controller = FindObjectOfType<GridController>();
@@ -37,6 +40,7 @@ namespace AI_Assignments.Pathfinding
             if (!m_ClosedList.Contains(startnode))
             {
                 GridNode currentNode = startnode;
+                GridNode previousNode = null;
                 //Current cost
                 float g = currentNode.Cost;
                 float h = ManhattanDistance(currentNode, endnode);
@@ -86,11 +90,28 @@ namespace AI_Assignments.Pathfinding
 
                     g = gg;
 
-                    m_OpenList.Clear();
+                    for (int j = 0 ; j < currentNode.AdjacentNodes.Count ; ++j )
+                    {
+                        if (currentNode.AdjacentNodes[j].Taken)
+                        {
+                            previousNode = currentNode.AdjacentNodes[j];
+                            break;
+                        }
+                    }
+
+                    currentNode.ParentNode = previousNode;
+                    m_OpenList.Remove (currentNode);
+                    m_SearchedList.Add (currentNode);
                     currentNode.Taken = true;
-                    if (currentNode.IsEnd) break;
+                    previousNode = currentNode;
+                    if ( currentNode.IsEnd )
+                    {
+                        AddToToFinalList (currentNode);
+                        break;
+                    }
                 }
             }
+
         }
 
         /// <summary>
@@ -123,6 +144,37 @@ namespace AI_Assignments.Pathfinding
                 return cost;
             }
             return -1.0f;
+        }
+
+        void AddToToFinalList(GridNode node)
+        {
+            node.SetColor (Color.blue);
+            m_FinalPath.Add (node);
+            if ( node.ParentNode ) AddToToFinalList (node.ParentNode);
+            else m_FinalPath.Reverse ();
+        }
+
+        void OnDrawGizmos()
+        {
+            if (m_SearchedList.Count > 1)
+            {
+                Vector3 offset = Vector3.up * 0.75f;
+                Gizmos.color = Color.red;
+                for (int i = 0 ; i < m_SearchedList.Count - 1 ; ++i )
+                {
+                    Gizmos.DrawLine (m_SearchedList[i].transform.position + offset, m_SearchedList[i + 1].transform.position + offset);
+                }
+            }
+
+            if (m_FinalPath.Count > 1)
+            {
+                Vector3 offset = Vector3.up;
+                Gizmos.color = Color.blue;
+                for ( int i = 0 ; i < m_FinalPath.Count - 1 ; ++i )
+                {
+                    Gizmos.DrawLine (m_FinalPath[i].transform.position + offset, m_FinalPath[i + 1].transform.position + offset);
+                }
+            }
         }
     }
 }

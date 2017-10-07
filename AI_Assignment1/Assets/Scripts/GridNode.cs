@@ -32,11 +32,18 @@ namespace AI_Assignments.Pathfinding
         int m_ID = 0;
         [SerializeField]
         List<GridNode> m_AdjacentNodes = new List<GridNode>();
+        [SerializeField]
+        GridNode m_ParentNode = null;
 
         #endregion
 
         bool m_Searched = false;
         bool m_Taken = false;
+
+        void Start()
+        {
+            if ( !Walkable ) SetColor (Color.black);
+        }
 
         public int ID
         {
@@ -57,25 +64,42 @@ namespace AI_Assignments.Pathfinding
         public bool IsStart
         {
             get { return m_IsStart; }
-            set { m_IsStart = value; }
+            set
+            {
+                m_IsStart = value;
+
+                SetColor (Color.cyan);
+            }
         }
 
         public bool IsEnd
         {
             get { return m_IsEnd; }
-            set { m_IsEnd = value; }
+            set
+            {
+                m_IsEnd = value;
+                SetColor (Color.blue);
+            }
         }
 
         public bool Searched
         {
             get { return m_Searched; }
-            set { m_Searched = value; }
+            set
+            {
+                m_Searched = value;
+                if ( !m_Taken && !IsEnd && !IsStart ) SetColor (Color.yellow);
+            }
         }
 
         public bool Taken
         {
             get { return m_Taken; }
-            set { m_Taken = value; }
+            set
+            {
+                m_Taken = value;
+                if ( !IsEnd && !IsStart ) SetColor (Color.green);
+            }
         }
 
         public float Cost
@@ -90,9 +114,30 @@ namespace AI_Assignments.Pathfinding
             set { m_Walkable = value; }
         }
 
+        public GridNode ParentNode
+        {
+            get { return m_ParentNode; }
+            set { m_ParentNode = value; }
+        }
+
         public void SetCoordinate(int x, int y)
         {
             m_Coordinate = new IntPair (x, y);
+        }
+
+        public void SetColor(Color newColor)
+        {
+            MaterialCopy.SetColor ("_Color", newColor);
+        }
+
+        Material MaterialCopy
+        {
+            get
+            {
+                Renderer rend = GetComponent<Renderer> ();
+                Material mat = new Material (rend.sharedMaterial);
+                return rend.sharedMaterial = new Material (mat);
+            }
         }
 
         /// <summary>
@@ -118,32 +163,6 @@ namespace AI_Assignments.Pathfinding
             }
         }
 
-        void OnDrawGizmos()
-        {
-            if (m_IsStart)
-            {
-                Gizmos.color = Color.cyan;
-                Gizmos.DrawSphere(transform.position + Vector3.up, 0.3f);
-            }
-            else if (m_IsEnd)
-            {
-                Gizmos.color = Color.white;
-                Gizmos.DrawSphere(transform.position + Vector3.up, 0.3f);
-            }
-
-            if (m_Taken)
-            {
-                Gizmos.color = Color.yellow;
-                Gizmos.DrawCube(transform.position, Vector3.one * 1.05f);
-                return;
-            }
-            else if (m_Searched)
-            {
-                Gizmos.color = Color.blue;
-                Gizmos.DrawCube(transform.position, Vector3.one * 1.05f);
-            }
-        }
-
         void OnDrawGizmosSelected()
         {
             if (m_AdjacentNodes.Count > 0)
@@ -157,6 +176,12 @@ namespace AI_Assignments.Pathfinding
                     Gizmos.DrawCube (m_AdjacentNodes[i].transform.position, Vector3.one * 1.1f);
                 }
             }
+
+            if (m_ParentNode)
+            {
+                Gizmos.color = Color.blue;
+                Gizmos.DrawCube (m_ParentNode.transform.position, Vector3.one * 1.5f);
+            }
         }
 
         public List<GridNode> AdjacentNodes
@@ -166,6 +191,8 @@ namespace AI_Assignments.Pathfinding
 
         public void ClearAdjacentList()
         {
+            if ( !Walkable ) MaterialCopy.SetColor ("_Color", Color.black);
+
             m_AdjacentNodes.Clear ();
         }
     }
