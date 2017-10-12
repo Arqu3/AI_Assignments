@@ -183,7 +183,7 @@ namespace AI_Assignments.Neural
             m_Layers[0].FeedForward (inputs);
             for (int i = 1 ; i < m_Layers.Length ; ++i )
             {
-                m_Layers[i].FeedForward (m_Layers[i -1].Outputs);
+                m_Layers[i].FeedForward (m_Layers[i - 1].Outputs);
             }
 
             return m_Layers[m_Layers.Length - 1].Outputs;

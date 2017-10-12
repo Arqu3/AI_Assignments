@@ -1,22 +1,36 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace AI_Assignments.Neural
 {
     public class NeuralTester : MonoBehaviour
     {
-        #region Private fields
+        #region Exposed fields
 
-
+        [SerializeField]
+        Text m_Text;
 
         #endregion
 
         void Start ()
         {
-            NeuralNetwork net = new NeuralNetwork (new int[] { 3, 25, 25, 1 });
+            SimulateNetwork ();
+        }
 
-            for (int i = 0 ; i < 5000 ; ++i )
+        public void SimulateNetwork()
+        {
+            int inputNeurons = 3;
+            int hiddenNeurons1 = 25;
+            int hiddenNeurons2 = 25;
+            int outputNeurons = 1;
+
+            NeuralNetwork net = new NeuralNetwork (new int[] { inputNeurons, hiddenNeurons1, hiddenNeurons2, outputNeurons });
+
+            int iterations = 5000;
+
+            for ( int i = 0 ; i < iterations ; ++i )
             {
                 net.FeedForward (new float[] { 0, 0, 0 });
                 net.BackProp (new float[] { 0 });
@@ -43,14 +57,19 @@ namespace AI_Assignments.Neural
                 net.BackProp (new float[] { 1 });
             }
 
-            Debug.Log (net.FeedForward (new float[] { 0, 0, 0 })[0]);
-            Debug.Log (net.FeedForward (new float[] { 0, 0, 1 })[0]);
-            Debug.Log (net.FeedForward (new float[] { 0, 1, 0 })[0]);
-            Debug.Log (net.FeedForward (new float[] { 1, 0, 0 })[0]);
-            Debug.Log (net.FeedForward (new float[] { 0, 1, 1 })[0]);
-            Debug.Log (net.FeedForward (new float[] { 1, 0, 1 })[0]);
-            Debug.Log (net.FeedForward (new float[] { 1, 1, 0 })[0]);
-            Debug.Log (net.FeedForward (new float[] { 1, 1, 1 })[0]);
+            m_Text.text = "Iterating " + iterations + " times on a neural network with:\n" +
+                "Input layer with: " + inputNeurons + " neurons,\n" +
+                "2 hidden layers with: " + hiddenNeurons1 + " and " + hiddenNeurons2 + " neurons each,\n" +
+                "Output layer with: " + outputNeurons + " neurons\n\n" +
+                "Result:\n" +
+                net.FeedForward (new float[] { 0, 0, 0 })[0] + ", expected was 0\n" +
+                net.FeedForward (new float[] { 0, 0, 1 })[0] + ", expected was 1\n" +
+                net.FeedForward (new float[] { 0, 1, 0 })[0] + ", expected was 1\n" +
+                net.FeedForward (new float[] { 1, 0, 0 })[0] + ", expected was 1\n" +
+                net.FeedForward (new float[] { 0, 1, 1 })[0] + ", expected was 0\n" +
+                net.FeedForward (new float[] { 1, 0, 1 })[0] + ", expected was 0\n" +
+                net.FeedForward (new float[] { 1, 1, 0 })[0] + ", expected was 0\n" +
+                net.FeedForward (new float[] { 1, 1, 1 })[0] + ", expected was 1\n";
         }
     }
 }
