@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace AI_Assignments.Pathfinding
 {
@@ -12,6 +13,9 @@ namespace AI_Assignments.Pathfinding
         List<GridList> m_Nodes = new List<GridList>();
         [SerializeField]
         List<GridNode> m_CompleteNodesList = new List<GridNode>();
+
+        [SerializeField]
+        GridCreator m_Creator = null;
 
         [SerializeField]
         GridNode m_StartNode = null;
@@ -48,9 +52,9 @@ namespace AI_Assignments.Pathfinding
         /// <summary>
         /// Adds an initial row to the controller
         /// </summary>
-        public void Setup()
+        public void Setup ()
         {
-            m_Nodes.Add (new GridList());
+            m_Nodes.Add (new GridList ());
         }
 
         /// <summary>
@@ -110,6 +114,105 @@ namespace AI_Assignments.Pathfinding
         {
             get { return m_CompleteNodesList; }
             set { m_CompleteNodesList = value; }
+        }
+
+        public GridCreator Creator
+        {
+            get { return m_Creator; }
+            set { m_Creator = value; }
+        }
+    }
+
+    [System.Serializable]
+    public class GridCreator
+    {
+        List<GridNode> m_Nodes;
+
+        public GridCreator()
+        {
+            m_Nodes = new List<GridNode> ();
+        }
+
+        public void Generate ( GameObject grid, GameObject prefab, int x, int y, bool randomCost = false )
+        {
+            //Setup grid parent object and other local variables
+            m_Nodes = new List<GridNode> ();
+            GridController controller = grid.AddComponent<GridController> ();
+            controller.Setup ();
+            grid.transform.position = Vector3.zero;
+            int currentX = 0;
+            int currentY = 0;
+            int total = x * y;
+            float offset = 1.1f;
+
+            for ( int i = 0 ; i < total ; ++i )
+            {
+                //Create node gameobject
+                GameObject go = Object.Instantiate (prefab, new Vector3 (offset * currentX, 0.0f, offset * currentY), Quaternion.identity);
+                go.transform.SetParent (grid.transform, true);
+
+                //Get gridnode script and setup node properties if != null
+                GridNode node = go.GetComponent<GridNode> ();
+                if ( node )
+                {
+                    m_Nodes.Add (node);
+
+                    node.ID = i;
+                    node.SetCoordinate (currentX, currentY);
+
+                    if ( randomCost ) node.Cost = Random.Range (1f, 3.0f);
+                    if ( i == 0 ) node.IsStart = true;
+                    else if ( i == total - 1 ) node.IsEnd = true;
+                }
+
+                //Add node to the current row in the gridcontroller
+                if ( currentX < x ) controller.AddNode (currentY, node);
+
+                //Increment row position, add new row if it has reached the end
+                ++currentX;
+                if ( currentX >= x )
+                {
+                    ++currentY;
+                    if ( currentY < y )
+                    {
+                        currentX = 0;
+                        controller.AddRow ();
+                    }
+                }
+            }
+
+            //Setup each node's adjacent nodes in the grid
+            for ( int i = 0 ; i < m_Nodes.Count ; ++i )
+            {
+                int x1 = m_Nodes[i].X;
+                int y1 = m_Nodes[i].Y;
+
+                m_Nodes[i].AddToAdjacentNodes (controller.GetNode (y1 - 1, x1));
+                m_Nodes[i].AddToAdjacentNodes (controller.GetNode (y1 + 1, x1));
+                m_Nodes[i].AddToAdjacentNodes (controller.GetNode (y1, x1 - 1));
+                m_Nodes[i].AddToAdjacentNodes (controller.GetNode (y1, x1 + 1));
+            }
+
+            controller.Nodes = m_Nodes;
+        }
+
+        public void Reassign()
+        {
+            GridController controller = Object.FindObjectOfType<GridController> ();
+            m_Nodes = Object.FindObjectsOfType<GridNode> ().ToList ();
+
+            for ( int i = 0 ; i < m_Nodes.Count ; ++i )
+            {
+                m_Nodes[i].ClearAdjacentList ();
+                if ( !m_Nodes[i].Walkable ) continue;
+                int x = m_Nodes[i].X;
+                int y = m_Nodes[i].Y;
+
+                m_Nodes[i].AddToAdjacentNodes (controller.GetNode (y - 1, x));
+                m_Nodes[i].AddToAdjacentNodes (controller.GetNode (y + 1, x));
+                m_Nodes[i].AddToAdjacentNodes (controller.GetNode (y, x - 1));
+                m_Nodes[i].AddToAdjacentNodes (controller.GetNode (y, x + 1));
+            }
         }
     }
 

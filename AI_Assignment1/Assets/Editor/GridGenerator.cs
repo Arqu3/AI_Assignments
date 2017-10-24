@@ -70,96 +70,18 @@ namespace AI_Assignments.Editor
                     DestroyImmediate (grid);
                 }
 
-                //Setup grid parent object and other local variables
-                m_Nodes = new List<GridNode> ();
-                grid = new GameObject (m_GridParentName);
-                GridController controller = grid.AddComponent<GridController> ();
-                controller.Setup ();
-                grid.transform.position = Vector3.zero;
-                m_CurrentY = 0;
-                m_CurrentX = 0;
-                int total = m_XAmount * m_YAMount;
-                float offset = 1.1f;
-
-                for (int i = 0 ; i < total ; ++i )
-                {
-                    //Create node gameobject
-                    GameObject go = Instantiate (m_GridPrefab, new Vector3 (offset * m_CurrentX, 0.0f, offset * m_CurrentY), Quaternion.identity);
-                    go.transform.SetParent (grid.transform, true);
-
-                    //Get gridnode script and setup node properties if != null
-                    GridNode node = go.GetComponent<GridNode> ();
-                    if ( node )
-                    {
-                        m_Nodes.Add (node);
-
-                        node.ID = i;
-                        node.SetCoordinate (m_CurrentX, m_CurrentY);
-
-                        if (m_RandomCost) node.Cost = Random.Range(1f, 3.0f);
-                        if (i == 0) node.IsStart = true;
-                        else if (i == total - 1) node.IsEnd = true;
-                    }
-
-                    //Add node to the current row in the gridcontroller
-                    if (m_CurrentX < m_XAmount) controller.AddNode(m_CurrentY, node);
-
-                    //Increment row position, add new row if it has reached the end
-                    ++m_CurrentX;
-                    if ( m_CurrentX >= m_XAmount )
-                    {
-                        ++m_CurrentY;
-                        if (m_CurrentY < m_YAMount)
-                        {
-                            m_CurrentX = 0;
-                            controller.AddRow();
-                        }
-                    }
-                }
-
-                //Setup each node's adjacent nodes in the grid
-                for (int i = 0; i < m_Nodes.Count; ++i)
-                {
-                    int x = m_Nodes[i].X;
-                    int y = m_Nodes[i].Y;
-
-                    m_Nodes[i].AddToAdjacentNodes(controller.GetNode(y - 1, x));
-                    m_Nodes[i].AddToAdjacentNodes(controller.GetNode(y + 1, x));
-                    m_Nodes[i].AddToAdjacentNodes(controller.GetNode(y, x - 1));
-                    m_Nodes[i].AddToAdjacentNodes(controller.GetNode(y, x + 1));
-                }
-
-                controller.Nodes = m_Nodes;
+                GridCreator creator = new GridCreator ();
+                creator.Generate (new GameObject (m_GridParentName), m_GridPrefab, m_XAmount, m_YAMount);
+                FindObjectOfType<GridController> ().Creator = creator;
 
                 m_WillGenerate = false;
             }
-            else if (grid)
+            else
             {
-                GridController controller = grid.GetComponent<GridController> ();
+                GridController controller = FindObjectOfType<GridController> ();
                 if (controller)
                 {
-                    if ( GUILayout.Button ("Re-assign adjacent nodes") )
-                    {
-                        m_Nodes = new List<GridNode> ();
-                        var nodes = FindObjectsOfType<GridNode> ();
-                        foreach(GridNode node in nodes)
-                        {
-                            m_Nodes.Add (node);
-                        }
-
-                        for ( int i = 0 ; i < m_Nodes.Count ; ++i )
-                        {
-                            m_Nodes[i].ClearAdjacentList ();
-                            if ( !m_Nodes[i].Walkable ) continue;
-                            int x = m_Nodes[i].X;
-                            int y = m_Nodes[i].Y;
-
-                            m_Nodes[i].AddToAdjacentNodes (controller.GetNode (y - 1, x));
-                            m_Nodes[i].AddToAdjacentNodes (controller.GetNode (y + 1, x));
-                            m_Nodes[i].AddToAdjacentNodes (controller.GetNode (y, x - 1));
-                            m_Nodes[i].AddToAdjacentNodes (controller.GetNode (y, x + 1));
-                        }
-                    }
+                    if ( GUILayout.Button ("Re-assign adjacent nodes") ) controller.Creator.Reassign ();
                 }
             }
         }
