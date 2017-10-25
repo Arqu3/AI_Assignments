@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using AI_Assignments.Pathfinding;
+using AI_Assignments.GeneticPathfinding;
 
 namespace AI_Assignments.Editor
 {
@@ -59,7 +61,11 @@ namespace AI_Assignments.Editor
             GameObject grid = GameObject.Find (m_GridParentName);
             if ( grid )
             {
-                if ( GUILayout.Button ("Remove grid") ) DestroyImmediate (grid);
+                if ( GUILayout.Button ("Remove grid") )
+                {
+                    DestroyImmediate (grid);
+                    EditorSceneManager.MarkAllScenesDirty ();
+                }
             }
 
             if (m_WillGenerate)
@@ -70,12 +76,20 @@ namespace AI_Assignments.Editor
                     DestroyImmediate (grid);
                 }
 
+                GeneticGenerator gen = FindObjectOfType<GeneticGenerator> ();
+                if (gen)
+                {
+                    gen.X = m_XAmount;
+                    gen.Y = m_YAMount;
+                }
+
                 GridCreator creator = new GridCreator ();
-                creator.Generate (new GameObject (m_GridParentName), m_GridPrefab, m_XAmount, m_YAMount);
+                creator.Generate (new GameObject (m_GridParentName), m_GridPrefab, m_XAmount, m_YAMount, GridCreator.AdjacentMode.XFIRST);
                 FindObjectOfType<GridController> ().Creator = creator;
                 FindObjectOfType<GridController> ().UpdateEditorColors ();
 
                 m_WillGenerate = false;
+                EditorSceneManager.MarkAllScenesDirty ();
             }
             else
             {
@@ -84,8 +98,9 @@ namespace AI_Assignments.Editor
                 {
                     if ( GUILayout.Button ("Re-assign adjacent nodes") )
                     {
-                        controller.Creator.Reassign ();
+                        controller.Creator.Reassign(GridCreator.AdjacentMode.XFIRST);
                         controller.UpdateEditorColors ();
+                        EditorSceneManager.MarkAllScenesDirty ();
                     }
                 }
             }

@@ -159,12 +159,21 @@ namespace AI_Assignments.Pathfinding
         List<GridNode> m_Nodes;
         GridController m_Controller;
 
+        public enum AdjacentMode
+        {
+            XFIRST,
+            YFIRST,
+            XY,
+            YX,
+            RANDOM
+        }
+
         public GridCreator()
         {
             m_Nodes = new List<GridNode> ();
         }
 
-        public void Generate ( GameObject grid, GameObject prefab, int x, int y, bool randomCost = false )
+        public void Generate ( GameObject grid, GameObject prefab, int x, int y, AdjacentMode mode, bool randomCost = false )
         {
             //Setup grid parent object and other local variables
             m_Nodes = new List<GridNode> ();
@@ -213,23 +222,14 @@ namespace AI_Assignments.Pathfinding
             }
 
             //Setup each node's adjacent nodes in the grid
-            for ( int i = 0 ; i < m_Nodes.Count ; ++i )
-            {
-                int x1 = m_Nodes[i].X;
-                int y1 = m_Nodes[i].Y;
-
-                m_Nodes[i].AddToAdjacentNodes (controller.GetNode (y1 - 1, x1));
-                m_Nodes[i].AddToAdjacentNodes (controller.GetNode (y1 + 1, x1));
-                m_Nodes[i].AddToAdjacentNodes (controller.GetNode (y1, x1 - 1));
-                m_Nodes[i].AddToAdjacentNodes (controller.GetNode (y1, x1 + 1));
-            }
+            SetupAdjacentNodes (controller, ref m_Nodes, mode);
 
             controller.Nodes = m_Nodes;
             controller.StartNode = m_Nodes[0];
             controller.EndNode = m_Nodes[m_Nodes.Count - 1];
         }
 
-        public void Reassign()
+        public void Reassign(AdjacentMode mode)
         {
             if ( !m_Controller )
             {
@@ -237,17 +237,49 @@ namespace AI_Assignments.Pathfinding
                 m_Nodes = m_Controller.Nodes;
             }
 
-            for ( int i = 0 ; i < m_Nodes.Count ; ++i )
+            SetupAdjacentNodes (m_Controller, ref m_Nodes, mode);
+        }
+
+        void SetupAdjacentNodes(GridController controller, ref List<GridNode> nodes, AdjacentMode mode)
+        {
+            for (int i = 0 ; i < nodes.Count ; ++i )
             {
                 m_Nodes[i].ClearAdjacentList ();
-                if ( !m_Nodes[i].Walkable ) continue;
-                int x = m_Nodes[i].X;
-                int y = m_Nodes[i].Y;
+                if ( !nodes[i].Walkable ) continue;
+                int x = nodes[i].X;
+                int y = nodes[i].Y;
 
-                m_Nodes[i].AddToAdjacentNodes (m_Controller.GetNode (y - 1, x));
-                m_Nodes[i].AddToAdjacentNodes (m_Controller.GetNode (y + 1, x));
-                m_Nodes[i].AddToAdjacentNodes (m_Controller.GetNode (y, x - 1));
-                m_Nodes[i].AddToAdjacentNodes (m_Controller.GetNode (y, x + 1));
+                switch ( mode )
+                {
+                    case AdjacentMode.XFIRST:
+                        nodes[i].AddToAdjacentNodes (controller.GetNode (y, x - 1));
+                        nodes[i].AddToAdjacentNodes (controller.GetNode (y, x + 1));
+                        nodes[i].AddToAdjacentNodes (controller.GetNode (y - 1, x));
+                        nodes[i].AddToAdjacentNodes (controller.GetNode (y + 1, x));
+                        break;
+                    case AdjacentMode.YFIRST:
+                        nodes[i].AddToAdjacentNodes (controller.GetNode (y - 1, x));
+                        nodes[i].AddToAdjacentNodes (controller.GetNode (y + 1, x));
+                        nodes[i].AddToAdjacentNodes (controller.GetNode (y, x - 1));
+                        nodes[i].AddToAdjacentNodes (controller.GetNode (y, x + 1));
+                        break;
+                    case AdjacentMode.XY:
+                        nodes[i].AddToAdjacentNodes (controller.GetNode (y, x - 1));
+                        nodes[i].AddToAdjacentNodes (controller.GetNode (y - 1, x));
+                        nodes[i].AddToAdjacentNodes (controller.GetNode (y, x + 1));
+                        nodes[i].AddToAdjacentNodes (controller.GetNode (y + 1, x));
+                        break;
+                    case AdjacentMode.YX:
+                        nodes[i].AddToAdjacentNodes (controller.GetNode (y - 1, x));
+                        nodes[i].AddToAdjacentNodes (controller.GetNode (y, x - 1));
+                        nodes[i].AddToAdjacentNodes (controller.GetNode (y + 1, x));
+                        nodes[i].AddToAdjacentNodes (controller.GetNode (y, x + 1));
+                        break;
+                    case AdjacentMode.RANDOM:
+                        break;
+                    default:
+                        break;
+                }
             }
         }
     }

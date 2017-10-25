@@ -21,6 +21,8 @@ namespace AI_Assignments.GeneticPathfinding
         int m_Elitism = 5;
         [SerializeField]
         float m_MutationRate = 0.01f;
+        [SerializeField]
+        GridCreator.AdjacentMode m_AdjacentMode = GridCreator.AdjacentMode.XFIRST;
 
         #endregion
 
@@ -30,6 +32,7 @@ namespace AI_Assignments.GeneticPathfinding
         int m_Total = 0;
         GridController m_Controller;
         PathfindingAgent m_Agent;
+        bool m_ShouldUpdate = true;
 
         #endregion
 
@@ -53,9 +56,21 @@ namespace AI_Assignments.GeneticPathfinding
             m_Generator.NewGeneration ();
         }
 
+        public int Y
+        {
+            get { return m_Rows; }
+            set { m_Rows = value; }
+        }
+
+        public int X
+        {
+            get { return m_Columns; }
+            set { m_Columns = value; }
+        }
+
         int GetRandomInt()
         {
-            return Random.Range (0, 10);
+            return Random.Range (1, 11);
         }
 
         float GetFitness(int index)
@@ -70,15 +85,18 @@ namespace AI_Assignments.GeneticPathfinding
                 if ( i <= 0 || i >= dna.Genes.Length - 1 ) continue;
 
                 m_Controller.Nodes[i].ResetInformation ();
-                m_Controller.Nodes[i].Walkable = dna.Genes[i] <= 5;
+                m_Controller.Nodes[i].Walkable = dna.Genes[i] <= 6;
                 if ( !m_Controller.Nodes[i].Walkable ) fitness += 1f;
             }
 
-            m_Controller.Creator.Reassign ();
+            m_Controller.Creator.Reassign (m_AdjacentMode);
             GridNode start = m_Controller.StartNode;
             start.Searched = true;
             start.Taken = true;
-            if ( m_Agent.Search (start, m_Controller.EndNode) ) fitness += m_Agent.PathLength * 2f + m_Agent.Steps;
+            GridNode end = m_Controller.EndNode;
+            end.Searched = false;
+            end.Taken = false;
+            if ( m_Agent.Search (start, end) ) fitness += m_Agent.PathLength * 4f + m_Agent.Steps;
             else
             {
                 m_Agent.ClearInformation ();

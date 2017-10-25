@@ -42,9 +42,13 @@ namespace AI_Assignments.Pathfinding
         bool m_Final;
         Renderer m_Renderer;
 
-        void Start()
+        private void Awake ()
         {
             m_Renderer = GetComponent<Renderer> ();
+        }
+
+        void Start()
+        {
             if ( !Walkable ) SetEditorColor (Color.black);
         }
 

@@ -30,7 +30,11 @@ namespace AI_Assignments.Pathfinding
             start.Searched = true;
             start.Taken = true;
 
-            if (m_SearchOnStart) Search(start, end);
+            if ( m_SearchOnStart )
+            {
+                Search (start, end);
+                m_Controller.UpdateColors ();
+            }
         }
 
         /// <summary>
