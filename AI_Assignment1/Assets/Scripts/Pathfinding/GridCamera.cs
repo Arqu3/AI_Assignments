@@ -6,6 +6,8 @@ namespace AI_Assignments.Pathfinding.Camera
 {
     public class GridCamera : MonoBehaviour
     {
+        [SerializeField]
+        float m_AdditionalOffset = 0.0f;
 
         void Start ()
         {
@@ -21,7 +23,7 @@ namespace AI_Assignments.Pathfinding.Camera
             Vector3 localpos = transform.position;
             localpos.x = pos.x;
             localpos.z = pos.z;
-            localpos.y = pos.x + pos.z;
+            localpos.y = pos.x + pos.z + m_AdditionalOffset;
             transform.position = localpos;
         }
     }

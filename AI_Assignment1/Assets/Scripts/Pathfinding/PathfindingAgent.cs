@@ -6,14 +6,17 @@ namespace AI_Assignments.Pathfinding
 {
     public class PathfindingAgent : MonoBehaviour
     {
+        [SerializeField]
+        bool m_SearchOnStart = true;
+
         List<GridNode> m_ClosedList = new List<GridNode>();
         List<GridNode> m_OpenList = new List<GridNode>();
 
         GridController m_Controller;
-        bool m_FoundTarget = false;
 
         List<GridNode> m_SearchedList = new List<GridNode> ();
         List<GridNode> m_FinalPath = new List<GridNode> ();
+        float m_TotalSteps = 0;
 
         void Awake()
         {
@@ -27,7 +30,7 @@ namespace AI_Assignments.Pathfinding
             start.Searched = true;
             start.Taken = true;
 
-            Search(start, end);
+            if (m_SearchOnStart) Search(start, end);
         }
 
         /// <summary>
@@ -35,50 +38,53 @@ namespace AI_Assignments.Pathfinding
         /// </summary>
         /// <param name="startnode"></param>
         /// <param name="endnode"></param>
-        void Search(GridNode startnode, GridNode endnode)
+        public bool Search(GridNode startnode, GridNode endnode)
         {
-            if (!m_ClosedList.Contains(startnode))
+            if ( !m_ClosedList.Contains (startnode) )
             {
                 GridNode currentNode = startnode;
                 GridNode previousNode = null;
                 //Current cost
                 float g = currentNode.Cost;
-                float h = ManhattanDistance(currentNode, endnode);
+                float h = ManhattanDistance (currentNode, endnode);
                 //Current "value" of moving from one node to another
                 float f = g + h;
 
                 //Never do a search through more than the available nodes
-                for (int i = 0; i < m_Controller.Nodes.Count; ++i)
+                for ( int i = 0 ; i < m_Controller.Nodes.Count ; ++i )
                 {
                     //Look for adjacent nodes, add them to the open list if they're not in the closed one
-                    for (int j = 0; j < currentNode.AdjacentNodes.Count; ++j)
+                    for ( int j = 0 ; j < currentNode.AdjacentNodes.Count ; ++j )
                     {
                         //print(j + " fist iteration");
-                        if (!m_ClosedList.Contains(currentNode.AdjacentNodes[j]))
+                        if ( !m_ClosedList.Contains (currentNode.AdjacentNodes[j]) )
                         {
                             currentNode.AdjacentNodes[j].Searched = true;
-                            m_OpenList.Add(currentNode.AdjacentNodes[j]);
+                            m_OpenList.Add (currentNode.AdjacentNodes[j]);
                         }
                     }
-                    m_ClosedList.Add(currentNode);
+                    m_ClosedList.Add (currentNode);
+
+                    if ( m_OpenList.Count <= 0 ) return false;
 
                     //Go through the current open list and chose the move valuable node to go to
                     float gg = g;
-                    f = g + m_OpenList[0].Cost + ManhattanDistance(m_OpenList[0], endnode);
+                    f = g + m_OpenList[0].Cost + ManhattanDistance (m_OpenList[0], endnode);
                     bool chosen = false;
-                    for (int j = 0; j < m_OpenList.Count; ++j)
+                    ++m_TotalSteps;
+                    for ( int j = 0 ; j < m_OpenList.Count ; ++j )
                     {
-                        if (m_OpenList[j].IsEnd)
+                        if ( m_OpenList[j].IsEnd )
                         {
                             currentNode = m_OpenList[j];
                             break;
                         }
 
                         float localg = g + m_OpenList[j].Cost;
-                        float localh = ManhattanDistance(m_OpenList[j], endnode);
+                        float localh = ManhattanDistance (m_OpenList[j], endnode);
                         float localf = localg + localh;
 
-                        if (localf <= f || m_OpenList.Count == 1 || (!chosen && j == m_OpenList.Count - 1))
+                        if ( localf <= f || m_OpenList.Count == 1 || ( !chosen && j == m_OpenList.Count - 1 ) )
                         {
                             gg = localg;
                             currentNode = m_OpenList[j];
@@ -90,9 +96,9 @@ namespace AI_Assignments.Pathfinding
 
                     g = gg;
 
-                    for (int j = 0 ; j < currentNode.AdjacentNodes.Count ; ++j )
+                    for ( int j = 0 ; j < currentNode.AdjacentNodes.Count ; ++j )
                     {
-                        if (currentNode.AdjacentNodes[j].Taken)
+                        if ( currentNode.AdjacentNodes[j].Taken )
                         {
                             previousNode = currentNode.AdjacentNodes[j];
                             break;
@@ -107,11 +113,11 @@ namespace AI_Assignments.Pathfinding
                     if ( currentNode.IsEnd )
                     {
                         AddToToFinalList (currentNode);
-                        break;
+                        return true;
                     }
                 }
             }
-
+            return false;
         }
 
         /// <summary>
@@ -148,10 +154,31 @@ namespace AI_Assignments.Pathfinding
 
         void AddToToFinalList(GridNode node)
         {
-            node.SetColor (Color.blue);
+            if ( m_FinalPath.Contains (node.ParentNode) ) return;
+
+            node.Final = true;
             m_FinalPath.Add (node);
             if ( node.ParentNode ) AddToToFinalList (node.ParentNode);
             else m_FinalPath.Reverse ();
+        }
+
+        public void ClearInformation ()
+        {
+            m_OpenList.Clear ();
+            m_ClosedList.Clear ();
+            m_SearchedList.Clear ();
+            m_FinalPath.Clear ();
+            m_TotalSteps = 0;
+        }
+
+        public float Steps
+        {
+            get { return m_TotalSteps; }
+        }
+
+        public int PathLength
+        {
+            get { return m_FinalPath.Count; }
         }
 
         void OnDrawGizmos()

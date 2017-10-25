@@ -39,10 +39,13 @@ namespace AI_Assignments.Pathfinding
 
         bool m_Searched = false;
         bool m_Taken = false;
+        bool m_Final;
+        Renderer m_Renderer;
 
         void Start()
         {
-            if ( !Walkable ) SetColor (Color.black);
+            m_Renderer = GetComponent<Renderer> ();
+            if ( !Walkable ) SetEditorColor (Color.black);
         }
 
         public int ID
@@ -68,7 +71,7 @@ namespace AI_Assignments.Pathfinding
             {
                 m_IsStart = value;
 
-                SetColor (Color.cyan);
+                //SetEditorColor (Color.cyan);
             }
         }
 
@@ -78,7 +81,7 @@ namespace AI_Assignments.Pathfinding
             set
             {
                 m_IsEnd = value;
-                SetColor (Color.blue);
+                //SetEditorColor (Color.blue);
             }
         }
 
@@ -88,7 +91,7 @@ namespace AI_Assignments.Pathfinding
             set
             {
                 m_Searched = value;
-                if ( !m_Taken && !IsEnd && !IsStart ) SetColor (Color.yellow);
+                //if ( !m_Taken && !IsEnd && !IsStart ) SetEditorColor (Color.yellow);
             }
         }
 
@@ -98,7 +101,17 @@ namespace AI_Assignments.Pathfinding
             set
             {
                 m_Taken = value;
-                if ( !IsEnd && !IsStart ) SetColor (Color.green);
+                //if ( !IsEnd && !IsStart ) SetEditorColor (Color.green);
+            }
+        }
+
+        public bool Final
+        {
+            get { return m_Final; }
+            set
+            {
+                m_Final = value;
+                //if ( m_Final ) m_Renderer.material.SetColor ("_Color", Color.blue);
             }
         }
 
@@ -125,18 +138,23 @@ namespace AI_Assignments.Pathfinding
             m_Coordinate = new IntPair (x, y);
         }
 
-        public void SetColor(Color newColor)
+        public void SetEditorColor(Color newColor)
         {
             MaterialCopy.SetColor ("_Color", newColor);
+        }
+
+        public void SetColor(Color newColor)
+        {
+            m_Renderer.material.SetColor ("_Color", newColor);
         }
 
         Material MaterialCopy
         {
             get
             {
-                Renderer rend = GetComponent<Renderer> ();
-                Material mat = new Material (rend.sharedMaterial);
-                return rend.sharedMaterial = new Material (mat);
+                if ( !m_Renderer ) m_Renderer = GetComponent<Renderer> ();
+                Material mat = new Material (m_Renderer.sharedMaterial);
+                return m_Renderer.sharedMaterial = new Material (mat);
             }
         }
 
@@ -191,9 +209,84 @@ namespace AI_Assignments.Pathfinding
 
         public void ClearAdjacentList()
         {
-            if ( !Walkable ) MaterialCopy.SetColor ("_Color", Color.black);
-
             m_AdjacentNodes.Clear ();
+        }
+
+        public void ResetInformation()
+        {
+            m_Taken = false;
+            m_Final = false;
+            m_Searched = false;
+        }
+
+        public void UpdateColor()
+        {
+            if (m_IsEnd || m_IsStart)
+            {
+                SetColor (Color.cyan);
+                return;
+            }
+
+            if (m_Final)
+            {
+                SetColor (Color.blue);
+                return;
+            }
+
+            if (m_Taken)
+            {
+                SetColor (Color.green);
+                return;
+            }
+
+            if (m_Searched)
+            {
+                SetColor (Color.yellow);
+                return;
+            }
+
+            if (!m_Walkable)
+            {
+                SetColor (Color.black);
+                return;
+            }
+
+            SetColor (Color.white);
+        }
+
+        public void UpdateEditorColor()
+        {
+            if ( m_IsEnd || m_IsStart )
+            {
+                SetEditorColor (Color.cyan);
+                return;
+            }
+
+            if ( m_Final )
+            {
+                SetEditorColor (Color.blue);
+                return;
+            }
+
+            if ( m_Taken )
+            {
+                SetEditorColor (Color.green);
+                return;
+            }
+
+            if ( m_Searched )
+            {
+                SetEditorColor (Color.yellow);
+                return;
+            }
+
+            if ( !m_Walkable )
+            {
+                SetEditorColor (Color.black);
+                return;
+            }
+
+            SetEditorColor (Color.white);
         }
     }
 

@@ -73,6 +73,7 @@ namespace AI_Assignments.Editor
                 GridCreator creator = new GridCreator ();
                 creator.Generate (new GameObject (m_GridParentName), m_GridPrefab, m_XAmount, m_YAMount);
                 FindObjectOfType<GridController> ().Creator = creator;
+                FindObjectOfType<GridController> ().UpdateEditorColors ();
 
                 m_WillGenerate = false;
             }
@@ -81,7 +82,11 @@ namespace AI_Assignments.Editor
                 GridController controller = FindObjectOfType<GridController> ();
                 if (controller)
                 {
-                    if ( GUILayout.Button ("Re-assign adjacent nodes") ) controller.Creator.Reassign ();
+                    if ( GUILayout.Button ("Re-assign adjacent nodes") )
+                    {
+                        controller.Creator.Reassign ();
+                        controller.UpdateEditorColors ();
+                    }
                 }
             }
         }

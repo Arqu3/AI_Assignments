@@ -100,6 +100,13 @@ namespace AI_Assignments.Pathfinding
         public GridNode StartNode
         {
             get { return m_StartNode; }
+            set
+            {
+                m_StartNode = value;
+                m_StartNode.IsStart = true;
+                m_StartNode.IsEnd = false;
+                m_StartNode.Walkable = true;
+            }
         }
 
         /// <summary>
@@ -108,6 +115,13 @@ namespace AI_Assignments.Pathfinding
         public GridNode EndNode
         {
             get { return m_EndNode; }
+            set
+            {
+                m_EndNode = value;
+                m_EndNode.IsStart = false;
+                m_EndNode.IsEnd = true;
+                m_EndNode.Walkable = true;
+            }
         }
 
         public List<GridNode> Nodes
@@ -121,12 +135,29 @@ namespace AI_Assignments.Pathfinding
             get { return m_Creator; }
             set { m_Creator = value; }
         }
+
+        public void UpdateColors()
+        {
+            for (int i = 0 ; i < m_CompleteNodesList.Count ; ++i )
+            {
+                m_CompleteNodesList[i].UpdateColor ();
+            }
+        }
+
+        public void UpdateEditorColors ()
+        {
+            for ( int i = 0 ; i < m_CompleteNodesList.Count ; ++i )
+            {
+                m_CompleteNodesList[i].UpdateEditorColor ();
+            }
+        }
     }
 
     [System.Serializable]
     public class GridCreator
     {
         List<GridNode> m_Nodes;
+        GridController m_Controller;
 
         public GridCreator()
         {
@@ -194,12 +225,17 @@ namespace AI_Assignments.Pathfinding
             }
 
             controller.Nodes = m_Nodes;
+            controller.StartNode = m_Nodes[0];
+            controller.EndNode = m_Nodes[m_Nodes.Count - 1];
         }
 
         public void Reassign()
         {
-            GridController controller = Object.FindObjectOfType<GridController> ();
-            m_Nodes = Object.FindObjectsOfType<GridNode> ().ToList ();
+            if ( !m_Controller )
+            {
+                m_Controller = Object.FindObjectOfType<GridController> ();
+                m_Nodes = m_Controller.Nodes;
+            }
 
             for ( int i = 0 ; i < m_Nodes.Count ; ++i )
             {
@@ -208,10 +244,10 @@ namespace AI_Assignments.Pathfinding
                 int x = m_Nodes[i].X;
                 int y = m_Nodes[i].Y;
 
-                m_Nodes[i].AddToAdjacentNodes (controller.GetNode (y - 1, x));
-                m_Nodes[i].AddToAdjacentNodes (controller.GetNode (y + 1, x));
-                m_Nodes[i].AddToAdjacentNodes (controller.GetNode (y, x - 1));
-                m_Nodes[i].AddToAdjacentNodes (controller.GetNode (y, x + 1));
+                m_Nodes[i].AddToAdjacentNodes (m_Controller.GetNode (y - 1, x));
+                m_Nodes[i].AddToAdjacentNodes (m_Controller.GetNode (y + 1, x));
+                m_Nodes[i].AddToAdjacentNodes (m_Controller.GetNode (y, x - 1));
+                m_Nodes[i].AddToAdjacentNodes (m_Controller.GetNode (y, x + 1));
             }
         }
     }

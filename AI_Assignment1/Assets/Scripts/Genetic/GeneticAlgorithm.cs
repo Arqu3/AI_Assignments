@@ -89,7 +89,7 @@ namespace AI_Assignments.Genetic
 
                 random -= m_Population[i].Fitness;
             }
-            return null;
+            return m_Population[0];
         }
 
         public int CompareDNA(DNA<T> a, DNA<T> b)
