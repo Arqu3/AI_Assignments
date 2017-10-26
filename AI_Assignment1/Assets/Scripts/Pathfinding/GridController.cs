@@ -10,6 +10,9 @@ namespace AI_Assignments.Pathfinding
         #region Private fields
 
         [SerializeField]
+        GridCreator.AdjacentMode m_AdjacentMode = GridCreator.AdjacentMode.XFIRST;
+
+        [SerializeField]
         List<GridList> m_Nodes = new List<GridList>();
         [SerializeField]
         List<GridNode> m_CompleteNodesList = new List<GridNode>();
@@ -94,6 +97,12 @@ namespace AI_Assignments.Pathfinding
             return null;
         }
 
+        public GridCreator.AdjacentMode AdjacentMode
+        {
+            get { return m_AdjacentMode; }
+            set { m_AdjacentMode = value; }
+        }
+
         /// <summary>
         /// The node where the current agent should start
         /// </summary>
@@ -164,8 +173,7 @@ namespace AI_Assignments.Pathfinding
             XFIRST,
             YFIRST,
             XY,
-            YX,
-            RANDOM
+            YX
         }
 
         public GridCreator()
@@ -274,8 +282,6 @@ namespace AI_Assignments.Pathfinding
                         nodes[i].AddToAdjacentNodes (controller.GetNode (y, x - 1));
                         nodes[i].AddToAdjacentNodes (controller.GetNode (y + 1, x));
                         nodes[i].AddToAdjacentNodes (controller.GetNode (y, x + 1));
-                        break;
-                    case AdjacentMode.RANDOM:
                         break;
                     default:
                         break;

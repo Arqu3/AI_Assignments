@@ -72,3 +72,5 @@ TrackingData/*
 /Assets/FMODStudioCache.meta
 fmod_editor.log
 fmod.log
+
+*.ide
