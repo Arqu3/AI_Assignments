@@ -4,6 +4,7 @@ using UnityEngine;
 using AI_Assignments.Genetic;
 using AI_Assignments.Pathfinding;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace AI_Assignments.GeneticPathfinding
 {
@@ -22,6 +23,10 @@ namespace AI_Assignments.GeneticPathfinding
         int m_Elitism = 5;
         [SerializeField]
         float m_MutationRate = 0.01f;
+
+        [Header ("Assignable variables")]
+        [SerializeField]
+        Text m_GenerationText;
 
         #endregion
 
@@ -47,6 +52,8 @@ namespace AI_Assignments.GeneticPathfinding
         private void Update ()
         {
             if ( Input.GetKeyDown (KeyCode.Escape) ) Exit ();
+
+            m_GenerationText.text = "Generation: " + m_Generator.Generation;
 
             if ( !m_ShouldUpdate ) return;
 
