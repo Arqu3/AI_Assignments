@@ -160,6 +160,11 @@ namespace AI_Assignments.Pathfinding
                 m_CompleteNodesList[i].UpdateEditorColor ();
             }
         }
+
+        public void SetAdjacentMode(int value)
+        {
+            m_AdjacentMode = (GridCreator.AdjacentMode)value;
+        }
     }
 
     [System.Serializable]
@@ -173,7 +178,8 @@ namespace AI_Assignments.Pathfinding
             XFIRST,
             YFIRST,
             XY,
-            YX
+            YX,
+            RANDOM
         }
 
         public GridCreator()
@@ -283,8 +289,24 @@ namespace AI_Assignments.Pathfinding
                         nodes[i].AddToAdjacentNodes (controller.GetNode (y + 1, x));
                         nodes[i].AddToAdjacentNodes (controller.GetNode (y, x + 1));
                         break;
-                    default:
-                        break;
+                    case AdjacentMode.RANDOM:
+                        List<GridNode> randomNodes = new List<GridNode> ();
+                        randomNodes.Add (( controller.GetNode (y - 1, x) ));
+                        randomNodes.Add (( controller.GetNode (y, x - 1) ));
+                        randomNodes.Add (( controller.GetNode (y + 1, x) ));
+                        randomNodes.Add (( controller.GetNode (y, x + 1) ));
+                        
+                        while (randomNodes.Count > 0)
+                        {
+                            int index = Random.Range (0, randomNodes.Count);
+                            nodes[i].AddToAdjacentNodes (randomNodes[index]);
+                            randomNodes.RemoveAt (index);
+                        }
+                        randomNodes = null;
+                        
+                        break;         
+                    default:           
+                        break;         
                 }
             }
         }

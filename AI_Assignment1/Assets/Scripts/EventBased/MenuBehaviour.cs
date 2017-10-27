@@ -79,25 +79,28 @@ namespace AI_Assignments.EventBased
         public void OnElementDeselected ( SelectEvent sEvent )
         {
             sEvent.Element.SetColor (Color.white);
+            sEvent.Element.SetAnimBool ("Hovered", false);
             sEvent.Element.SetText ("Button");
             AddOutput (sEvent.Output);
         }
 
         public void OnElementPressed ( PressEvent pEvent )
         {
+            pEvent.Element.SetAnimTrigger ("Pressed");
             AddOutput (pEvent.Output);
         }
 
         public void OnElementSelected ( SelectEvent sEvent )
         {
             sEvent.Element.SetColor (Color.green);
+            sEvent.Element.SetAnimBool ("Hovered", true);
             sEvent.Element.SetText ("Hovered");
             AddOutput (sEvent.Output);
         }
 
         void AddOutput(string text)
         {
-            if ( m_OutputText.text.Length > 1000 ) m_OutputText.text = "";
+            if ( m_OutputText.text.Length > 1500 ) m_OutputText.text = "";
 
             m_OutputText.text += text + "\n\n";
         }

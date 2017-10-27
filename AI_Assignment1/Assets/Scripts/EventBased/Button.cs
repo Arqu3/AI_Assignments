@@ -13,6 +13,7 @@ namespace AI_Assignments.EventBased
         MenuBehaviour m_Menu;
         Image m_Image;
         Text m_Text;
+        Animator m_Anim;
 
         bool m_Selected = false;
         bool m_CanPress = true;
@@ -24,6 +25,7 @@ namespace AI_Assignments.EventBased
             m_Menu = FindObjectOfType<MenuBehaviour> ();
             m_Image = GetComponent<Image> ();
             m_Text = GetComponentInChildren<Text> ();
+            m_Anim = GetComponent<Animator> ();
         }
 
         void Update()
@@ -81,6 +83,16 @@ namespace AI_Assignments.EventBased
 
             m_Image.color = m_Selected ? Color.green : Color.white;
             m_CanPress = true;
+        }
+
+        public override void SetAnimBool ( string name, bool value )
+        {
+            m_Anim.SetBool (name, value);
+        }
+
+        public override void SetAnimTrigger ( string name )
+        {
+            m_Anim.SetTrigger (name);
         }
     }
 }

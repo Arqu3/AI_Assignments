@@ -24,6 +24,14 @@ namespace AI_Assignments.GeneticPathfinding
         [SerializeField]
         float m_MutationRate = 0.01f;
 
+        [Header ("Fitness function variables")]
+        [SerializeField]
+        float m_WallIncrease = 1.0f;
+        [SerializeField]
+        float m_PathMultiplier = 4.0f;
+        [SerializeField]
+        float m_StepMultiplier = 1.0f;
+
         [Header ("Assignable variables")]
         [SerializeField]
         Text m_GenerationText;
@@ -148,7 +156,7 @@ namespace AI_Assignments.GeneticPathfinding
 
                 m_Controller.Nodes[i].ResetInformation ();
                 m_Controller.Nodes[i].Walkable = dna.Genes[i] <= 6;
-                if ( !m_Controller.Nodes[i].Walkable ) fitness += 1f;
+                if ( !m_Controller.Nodes[i].Walkable ) fitness += m_WallIncrease;
             }
 
             m_Controller.Creator.Reassign (m_Controller.AdjacentMode);
@@ -158,7 +166,7 @@ namespace AI_Assignments.GeneticPathfinding
             GridNode end = m_Controller.EndNode;
             end.Searched = false;
             end.Taken = false;
-            if ( m_Agent.Search (start, end) ) fitness += m_Agent.PathLength * 4f + m_Agent.Steps;
+            if ( m_Agent.Search (start, end) ) fitness += m_Agent.PathLength * m_PathMultiplier + m_Agent.Steps * m_StepMultiplier;
             else return 0.0f;
 
             if ( index >= m_Generator.Population.Count - 1 ) m_Controller.UpdateColors ();
