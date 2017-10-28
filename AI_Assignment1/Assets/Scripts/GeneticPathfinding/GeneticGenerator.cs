@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using AI_Assignments.Genetic;
 using AI_Assignments.Pathfinding;
 using UnityEngine.SceneManagement;
@@ -104,6 +102,9 @@ namespace AI_Assignments.GeneticPathfinding
             m_Generator.NewGeneration ();
         }
 
+        /// <summary>
+        /// Shows the current best generation
+        /// </summary>
         public void SetBestGeneration()
         {
             int[] best = m_Generator.BestGenes;
@@ -144,6 +145,11 @@ namespace AI_Assignments.GeneticPathfinding
             return Random.Range (1, 11);
         }
 
+        /// <summary>
+        /// Calculates fitness for the genetic generator
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
         float GetFitness(int index)
         {
             float fitness = 0.0f;

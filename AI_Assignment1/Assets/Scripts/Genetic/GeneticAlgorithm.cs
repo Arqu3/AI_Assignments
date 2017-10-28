@@ -19,6 +19,15 @@ namespace AI_Assignments.Genetic
 
         #endregion
 
+        /// <summary>
+        /// Creates a new genetic algorithm using given input
+        /// </summary>
+        /// <param name="populationSize"></param>
+        /// <param name="dnaSize"></param>
+        /// <param name="getRandomGene"></param>
+        /// <param name="getFitness"></param>
+        /// <param name="elitism"></param>
+        /// <param name="mutationRate"></param>
         public GeneticAlgorithm ( int populationSize, int dnaSize, Func<T> getRandomGene, Func<int, float> getFitness, int elitism, float mutationRate = 0.01f)
         {
             m_Generation = 1;
@@ -35,6 +44,9 @@ namespace AI_Assignments.Genetic
             }
         }
 
+        /// <summary>
+        /// Simulates a new generation in the population
+        /// </summary>
         public void NewGeneration()
         {
             if ( m_Population.Count <= 0 ) return;
@@ -64,6 +76,9 @@ namespace AI_Assignments.Genetic
             ++m_Generation;
         }
 
+        /// <summary>
+        /// Calculates the fitness of the current population
+        /// </summary>
         public void CalculateFitness()
         {
             m_FitnessSum = 0.0f;
@@ -79,6 +94,10 @@ namespace AI_Assignments.Genetic
             best.Genes.CopyTo (m_BestGenes, 0);
         }
 
+        /// <summary>
+        /// Returns a parent for crossover
+        /// </summary>
+        /// <returns></returns>
         DNA<T> ChooseParent()
         {
             float random = UnityEngine.Random.Range (0f, 1f) * m_FitnessSum;

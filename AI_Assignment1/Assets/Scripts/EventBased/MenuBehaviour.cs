@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -82,12 +80,14 @@ namespace AI_Assignments.EventBased
             sEvent.Element.SetAnimBool ("Hovered", false);
             sEvent.Element.SetText ("Button");
             AddOutput (sEvent.Output);
+            sEvent = null;
         }
 
         public void OnElementPressed ( PressEvent pEvent )
         {
             pEvent.Element.SetAnimTrigger ("Pressed");
             AddOutput (pEvent.Output);
+            pEvent = null;
         }
 
         public void OnElementSelected ( SelectEvent sEvent )
@@ -96,11 +96,12 @@ namespace AI_Assignments.EventBased
             sEvent.Element.SetAnimBool ("Hovered", true);
             sEvent.Element.SetText ("Hovered");
             AddOutput (sEvent.Output);
+            sEvent = null;
         }
 
         void AddOutput(string text)
         {
-            if ( m_OutputText.text.Length > 1500 ) m_OutputText.text = "";
+            if ( m_OutputText.text.Length > 1000 ) m_OutputText.text = "";
 
             m_OutputText.text += text + "\n\n";
         }

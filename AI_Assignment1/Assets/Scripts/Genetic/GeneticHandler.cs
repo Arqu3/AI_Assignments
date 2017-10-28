@@ -45,7 +45,7 @@ namespace AI_Assignments.Genetic
 
         void Start ()
         {
-            m_TargetText.text = m_TargetString;
+            m_TargetText.text = "Target:\n" + m_TargetString;
             m_GA = new GeneticAlgorithm<char> (m_PopulationSize, m_TargetString.Length, GetRandomCharacter, GetFitness, m_Elitism, m_MutationRate);
         }
 
@@ -80,8 +80,8 @@ namespace AI_Assignments.Genetic
 
         void UpdateTexts()
         {
-            m_CurrentText.text = CharArrayToString (m_GA.BestGenes);
-            m_GenerationText.text = m_GA.Generation.ToString ();
+            m_CurrentText.text = "Current:\n" + CharArrayToString (m_GA.BestGenes);
+            m_GenerationText.text = "Generation: " + m_GA.Generation.ToString ();
             for (int i = 0 ; i < m_GA.Population.Count ; ++i )
             {
                 m_CurrentNum += m_GA.Population[i].Genes.Length;

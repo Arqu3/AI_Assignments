@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace AI_Assignments.Neural
@@ -22,8 +20,8 @@ namespace AI_Assignments.Neural
         public void SimulateNetwork()
         {
             int inputNeurons = 3;
-            int hiddenNeurons1 = 25;
-            int hiddenNeurons2 = 25;
+            int hiddenNeurons1 = 10;
+            int hiddenNeurons2 = 5;
             int outputNeurons = 1;
 
             NeuralNetwork net = new NeuralNetwork (new int[] { inputNeurons, hiddenNeurons1, hiddenNeurons2, outputNeurons });

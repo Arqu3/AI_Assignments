@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace AI_Assignments.Neural
 {
@@ -73,6 +70,11 @@ namespace AI_Assignments.Neural
 
         #endregion
 
+        /// <summary>
+        /// Feeds input into the layer
+        /// </summary>
+        /// <param name="inputs"></param>
+        /// <returns></returns>
         public float[] FeedForward(float[] inputs)
         {
             m_Inputs = inputs;
@@ -92,11 +94,20 @@ namespace AI_Assignments.Neural
             return m_Outputs;
         }
 
+        /// <summary>
+        /// Maps the input value between -1 and 1
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         float TanHDeri(float value)
         {
             return 1f - ( value * value );
         }
 
+        /// <summary>
+        /// Calculates and distributes the error across the layer
+        /// </summary>
+        /// <param name="expected"></param>
         public void BackPropOutput(float[] expected)
         {
             for ( int i = 0 ; i < m_NumberOfOutputs ; ++i )
@@ -178,6 +189,11 @@ namespace AI_Assignments.Neural
             }
         }
 
+        /// <summary>
+        /// Feeds input into the network
+        /// </summary>
+        /// <param name="inputs"></param>
+        /// <returns></returns>
         public float[] FeedForward(float[] inputs)
         {
             m_Layers[0].FeedForward (inputs);
@@ -189,6 +205,10 @@ namespace AI_Assignments.Neural
             return m_Layers[m_Layers.Length - 1].Outputs;
         }
 
+        /// <summary>
+        /// Distributes the error between expected and current values across the network
+        /// </summary>
+        /// <param name="expected"></param>
         public void BackProp(float[] expected)
         {
             for ( int i = m_Layers.Length - 1 ; i >= 0 ; --i )
