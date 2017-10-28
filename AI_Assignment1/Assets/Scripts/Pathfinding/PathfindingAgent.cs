@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace AI_Assignments.Pathfinding
@@ -69,6 +68,7 @@ namespace AI_Assignments.Pathfinding
                     }
                     m_ClosedList.Add (currentNode);
 
+                    //No nodes in open list means there isn't any complete path
                     if ( m_OpenList.Count <= 0 ) return false;
 
                     //Go through the current open list and chose the move valuable node to go to
@@ -156,6 +156,10 @@ namespace AI_Assignments.Pathfinding
             return -1.0f;
         }
 
+        /// <summary>
+        /// Adds a node to the final path (this function calls itself afterwards until finished)
+        /// </summary>
+        /// <param name="node"></param>
         void AddToToFinalList(GridNode node)
         {
             if ( m_FinalPath.Contains (node.ParentNode) ) return;
@@ -166,6 +170,9 @@ namespace AI_Assignments.Pathfinding
             else m_FinalPath.Reverse ();
         }
 
+        /// <summary>
+        /// Clears/resets current pathfinding information
+        /// </summary>
         public void ClearInformation ()
         {
             m_OpenList.Clear ();
@@ -175,11 +182,17 @@ namespace AI_Assignments.Pathfinding
             m_TotalSteps = 0;
         }
 
+        /// <summary>
+        /// Number of steps taken for the agent to finish
+        /// </summary>
         public float Steps
         {
             get { return m_TotalSteps; }
         }
 
+        /// <summary>
+        /// Length of the final path
+        /// </summary>
         public int PathLength
         {
             get { return m_FinalPath.Count; }
